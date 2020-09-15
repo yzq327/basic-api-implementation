@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -33,6 +34,7 @@ class RsListApplicationTests {
     MockMvc mockMvc;
 
 
+    @DirtiesContext
     @Test
     public void should_get_rs_event_list() throws Exception{
         mockMvc.perform(get("/rs/list"))
@@ -46,6 +48,7 @@ class RsListApplicationTests {
                 .andExpect(status().isOk());
     }
 
+    @DirtiesContext
     @Test
     public void should_get_one_rs_event() throws Exception {
         mockMvc.perform(get("/rs/1"))
@@ -62,6 +65,7 @@ class RsListApplicationTests {
                 .andExpect(status().isOk());
     }
 
+    @DirtiesContext
     @Test
     public void should_get_rs_event_between() throws Exception {
         mockMvc.perform(get("/rs/list?start=1&end=2"))
@@ -89,6 +93,7 @@ class RsListApplicationTests {
                 .andExpect(status().isOk());
     }
 
+    @DirtiesContext
     @Test
     public void should_add_rs_event() throws Exception {
         RsEvent rsEvent = new RsEvent("猪肉涨价了","经济");
@@ -109,8 +114,9 @@ class RsListApplicationTests {
                 .andExpect(status().isOk());
     }
 
-
+    @DirtiesContext
     @Test
+
     public void should_patch_rs_event() throws Exception {
         RsEvent rsEvent = new RsEvent("第三条事件patch","实时");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -128,7 +134,7 @@ class RsListApplicationTests {
                 .andExpect(status().isOk());
     }
 
-
+    @DirtiesContext
     @Test
     public void should_delete_rs_event() throws Exception {
         mockMvc.perform(delete("/rs/3")).andExpect(status().isOk());
