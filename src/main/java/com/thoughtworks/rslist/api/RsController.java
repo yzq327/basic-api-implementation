@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.RsEvent;
+import com.thoughtworks.rslist.domain.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +18,10 @@ public class RsController {
 
   private List<RsEvent> initRsEventList() {
     List<RsEvent> rsEventList = new ArrayList<>();
-    rsEventList.add(new RsEvent("第一条事件","无标签"));
-    rsEventList.add(new RsEvent("第二条事件","无标签"));
-    rsEventList.add(new RsEvent("第三条事件","无标签"));
+    User user =new User("yzq", "female",18,"a@b.com","12345678912");
+    rsEventList.add(new RsEvent("第一条事件","无标签",user));
+    rsEventList.add(new RsEvent("第二条事件","无标签",user));
+    rsEventList.add(new RsEvent("第三条事件","无标签",user));
     return rsEventList;
   }
 
