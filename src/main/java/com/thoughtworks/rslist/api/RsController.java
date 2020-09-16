@@ -45,27 +45,31 @@ public class RsController {
   }
 
   @PostMapping("/rs/event")
-  public ResponseEntity addRsEvent(@RequestBody @Validated String rsEvent) throws JsonProcessingException {
-    ObjectMapper objectMapper = new ObjectMapper();
-    RsEvent event = objectMapper.readValue(rsEvent, RsEvent.class);
-    rsList.add(event);
-    return ResponseEntity.created(null).build();
-  }
-
-  @PostMapping("/rs/list")
-  public ResponseEntity addRsEvent(@RequestBody @Validated  RsEvent rsEvent) throws JsonProcessingException {
+  public ResponseEntity addRsEvent(@RequestBody @Validated RsEvent rsEvent) throws JsonProcessingException {
+    String userName= rsEvent.getUser().getName();
+    boolean isNotExist=true;
+    for (User user : UserController.userList){
+      if (user.getName().equals(userName)) {
+         isNotExist=false;
+      }
+    }
+    if(isNotExist){
+      UserController.userList.add(rsEvent.getUser());
+    }
     rsList.add(rsEvent);
-    return ResponseEntity.created(null).build();
-
+    int newRsIndex=rsList.size()-1;
+    return ResponseEntity.created(null).body(newRsIndex);
   }
+
+
 
   @PatchMapping("/rs/{index}")
   public ResponseEntity patchRsEvent (@RequestBody RsEvent rsEvent, @PathVariable int index)  {
     if(index < 1 || index > rsList.size()){
       throw new IndexOutOfBoundsException();
     }
-     rsList.set(index-1,rsEvent);
-     return ResponseEntity.created(null).build();
+    rsList.set(index-1,rsEvent);
+    return ResponseEntity.created(null).build();
   }
 
   @DeleteMapping("/rs/{index}")

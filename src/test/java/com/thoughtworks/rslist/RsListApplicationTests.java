@@ -204,7 +204,7 @@ class RsListApplicationTests {
         RsEvent rsEvent = new RsEvent(null,"娱乐",user);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/list").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -215,9 +215,51 @@ class RsListApplicationTests {
         RsEvent rsEvent = new RsEvent("添加一条热搜",null,user);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/list").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
+    @DirtiesContext
+    @Test
+    public void should_throw_rs_event_not_valid_exception() throws Exception {
+        mockMvc.perform(get("/rs/0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error",is("invalid index")));
+    }
 
+    @DirtiesContext
+    @Test
+    public void should_throw_method_argument_not_valid_exception() throws Exception {
+        User user =new User("yzq", "female",18,"a@b.com","12345678912");
+        RsEvent rsEvent = new RsEvent(null,"经济",user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid param")));
+    }
+
+    @DirtiesContext
+    @Test
+    public void should_throw_invalid_request_param_exception() throws Exception {
+        mockMvc.perform(get("/rs/list?start=0&end=2"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+    }
+
+    @DirtiesContext
+    @Test
+    public void should_add_rs_event_add_users() throws Exception {
+        User user =new User("user3", "female",18,"a@b.com","12345678912");
+        RsEvent rsEvent = new RsEvent("猪肉涨价了","经济",user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        mockMvc.perform(get("/user?start=3&end=3"))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].name",is("user3")))
+                .andExpect(status().isOk());
+
+    }
 }
