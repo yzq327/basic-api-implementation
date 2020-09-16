@@ -17,7 +17,7 @@ class UserController {
 
    @PostMapping("/user")
    public  void addUser(@RequestBody  @Valid User user){
-        userList.add(user);
+       userList.add(user);
    }
 
    @GetMapping("/user")

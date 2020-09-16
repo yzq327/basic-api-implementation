@@ -4,9 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
+import com.zaxxer.hikari.util.FastList;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +29,10 @@ public class RsController {
   }
 
   @GetMapping("/rs/{index}")
-  public ResponseEntity getOneRsEvent(@PathVariable int index){
+  public ResponseEntity getOneRsEvent(@PathVariable int index) throws Exception {
+    if(index<1 || index > rsList.size()){
+      throw new IndexOutOfBoundsException();
+    }
     return ResponseEntity.ok(rsList.get(index - 1));
   }
 
@@ -39,21 +45,32 @@ public class RsController {
   }
 
   @PostMapping("/rs/event")
-  public ResponseEntity addRsEvent(@RequestBody String rsEvent) throws JsonProcessingException {
+  public ResponseEntity addRsEvent(@RequestBody @Validated String rsEvent) throws JsonProcessingException {
     ObjectMapper objectMapper = new ObjectMapper();
     RsEvent event = objectMapper.readValue(rsEvent, RsEvent.class);
     rsList.add(event);
     return ResponseEntity.created(null).build();
   }
 
+  @PostMapping("/rs/list")
+  public void addRsEvent(@RequestBody @Validated  RsEvent rsEvent) throws JsonProcessingException {
+    rsList.add(rsEvent);
+  }
+
   @PatchMapping("/rs/{index}")
   public ResponseEntity patchRsEvent (@RequestBody RsEvent rsEvent, @PathVariable int index)  {
+    if(index < 1 || index > rsList.size()){
+      throw new IndexOutOfBoundsException();
+    }
      rsList.set(index-1,rsEvent);
      return ResponseEntity.created(null).build();
   }
 
   @DeleteMapping("/rs/{index}")
   public ResponseEntity deleteRsEvent(@PathVariable int index)  {
+    if(index < 1 || index > rsList.size()){
+      throw new IndexOutOfBoundsException();
+    }
     rsList.remove(index-1);
     return ResponseEntity.created(null).build();
   }

@@ -5,6 +5,7 @@ import com.thoughtworks.rslist.api.RsController;
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +45,10 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[0]",not(hasKey("user"))))
                 .andExpect(jsonPath("$[1].eventName",is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyWord",is("无标签")))
-                .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[1]",not(hasKey("user"))))
                 .andExpect(jsonPath("$[2].eventName",is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyWord",is("无标签")))
-                .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[2]",not(hasKey("user"))))
                 .andExpect(status().isOk());
     }
 
@@ -81,7 +82,7 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[0]",not(hasKey("user"))))
                 .andExpect(jsonPath("$[1].eventName",is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyWord",is("无标签")))
-                .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[1]",not(hasKey("user"))))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/list?start=2&end=3"))
                 .andExpect(jsonPath("$", hasSize(2)))
@@ -90,19 +91,19 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[0]",not(hasKey("user"))))
                 .andExpect(jsonPath("$[1].eventName",is("第三条事件")))
                 .andExpect(jsonPath("$[1].keyWord",is("无标签")))
-                .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[1]",not(hasKey("user"))))
                 .andExpect(status().isOk());
          mockMvc.perform(get("/rs/list?start=1&end=3"))
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].eventName",is("第一条事件")))
                 .andExpect(jsonPath("$[0].keyWord",is("无标签")))
-                 .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[0]",not(hasKey("user"))))
                 .andExpect(jsonPath("$[1].eventName",is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyWord",is("无标签")))
-                 .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[1]",not(hasKey("user"))))
                 .andExpect(jsonPath("$[2].eventName",is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyWord",is("无标签")))
-                 .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[2]",not(hasKey("user"))))
                 .andExpect(status().isOk());
     }
 
@@ -122,13 +123,13 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[0]",not(hasKey("user"))))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyWord", is("无标签")))
-                .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[1]",not(hasKey("user"))))
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyWord", is("无标签")))
-                .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[2]",not(hasKey("user"))))
                 .andExpect(jsonPath("$[3].eventName", is("猪肉涨价了")))
                 .andExpect(jsonPath("$[3].keyWord", is("经济")))
-                .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[3]",not(hasKey("user"))))
                 .andExpect(status().isOk());
     }
 
@@ -148,10 +149,10 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[0]",not(hasKey("user"))))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyWord", is("无标签")))
-                .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[1]",not(hasKey("user"))))
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件patch")))
                 .andExpect(jsonPath("$[2].keyWord", is("实时")))
-                .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[2]",not(hasKey("user"))))
                 .andExpect(status().isOk());
     }
 
@@ -166,7 +167,57 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[0]",not(hasKey("user"))))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyWord", is("无标签")))
-                .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[1]",not(hasKey("user"))))
                 .andExpect(status().isOk());
     }
+
+    @DirtiesContext
+    @Test
+    public void should_add_rs_with_userName_not_exist_event() throws Exception {
+        User user =new User("xiaowang", "female",19,"a@thoughtworks.com","18888888888");
+        RsEvent rsEvent = new RsEvent("添加一条热搜","娱乐",user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        mockMvc.perform(get("/rs/list"))
+                .andExpect(jsonPath("$", hasSize(4)))
+                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
+                .andExpect(jsonPath("$[0].keyWord", is("无标签")))
+                .andExpect(jsonPath("$[0]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
+                .andExpect(jsonPath("$[1].keyWord", is("无标签")))
+                .andExpect(jsonPath("$[1]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
+                .andExpect(jsonPath("$[2].keyWord", is("无标签")))
+                .andExpect(jsonPath("$[2]",not(hasKey("user"))))
+                .andExpect(jsonPath("$[3].eventName", is("添加一条热搜")))
+                .andExpect(jsonPath("$[3].keyWord", is("娱乐")))
+                .andExpect(jsonPath("$[3]",not(hasKey("user"))))
+                .andExpect(status().isOk());
+    }
+
+    @DirtiesContext
+    @Test
+    public void eventName_should_not_null() throws Exception {
+        User user =new User("xiaowang", "female",19,"a@thoughtworks.com","18888888888");
+        RsEvent rsEvent = new RsEvent(null,"娱乐",user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/list").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @DirtiesContext
+    @Test
+    public void keyWord_should_not_null() throws Exception {
+        User user =new User("xiaowang", "female",19,"a@thoughtworks.com","18888888888");
+        RsEvent rsEvent = new RsEvent("添加一条热搜",null,user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/list").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+
 }
