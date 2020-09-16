@@ -43,7 +43,6 @@ public class RsController {
   }
 
   @PatchMapping("/rs/{index}")
-
   public void patchRsEvent (@RequestBody RsEvent rsEvent, @PathVariable int index)  {
      rsList.set(index-1,rsEvent);
   }

@@ -116,7 +116,6 @@ class RsListApplicationTests {
 
     @DirtiesContext
     @Test
-
     public void should_patch_rs_event() throws Exception {
         RsEvent rsEvent = new RsEvent("第三条事件patch","实时");
         ObjectMapper objectMapper = new ObjectMapper();
