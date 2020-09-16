@@ -99,7 +99,7 @@ class RsListApplicationTests {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
         mockMvc.perform(get("/rs/list"))
                 .andExpect(jsonPath("$", hasSize(4)))
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
@@ -120,7 +120,7 @@ class RsListApplicationTests {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(patch("/rs/3").content(jsonString).contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
         mockMvc.perform(get("/rs/list"))
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
@@ -135,7 +135,7 @@ class RsListApplicationTests {
     @DirtiesContext
     @Test
     public void should_delete_rs_event() throws Exception {
-        mockMvc.perform(delete("/rs/3")).andExpect(status().isOk());
+        mockMvc.perform(delete("/rs/3")).andExpect(status().isCreated());
         mockMvc.perform(get("/rs/list"))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
