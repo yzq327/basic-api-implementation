@@ -52,6 +52,7 @@ public class RsController {
     return ResponseEntity.created(null).build();
   }
 
+
   @PostMapping("/rs/list")
   public void addRsEvent(@RequestBody @Validated  RsEvent rsEvent) throws JsonProcessingException {
     rsList.add(rsEvent);
