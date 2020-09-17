@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
 import com.zaxxer.hikari.util.FastList;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +14,13 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 public class RsController {
 
   private List<RsEvent> rsList = initRsEventList();
+
 
   private List<RsEvent> initRsEventList() {
     List<RsEvent> rsEventList = new ArrayList<>();
@@ -41,6 +44,7 @@ public class RsController {
     if (start == null || end == null) {
       return ResponseEntity.ok(rsList);
     }
+
     return ResponseEntity.ok(rsList.subList(start - 1, end));
   }
 
@@ -58,9 +62,10 @@ public class RsController {
     }
     rsList.add(rsEvent);
     int newRsIndex=rsList.size()-1;
-    return ResponseEntity.created(null).body(newRsIndex);
+   // return ResponseEntity.created(null)
+    //        .header("index",Integer.toString(newRsIndex)).build();
+    return ResponseEntity.created(null).build();
   }
-
 
 
   @PatchMapping("/rs/{index}")
