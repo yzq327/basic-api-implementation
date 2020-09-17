@@ -1,6 +1,9 @@
 package com.thoughtworks.rslist.po;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -10,6 +13,9 @@ import javax.validation.constraints.*;
 @Table(name = "user")
 @Data
 @Component
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserPo {
     @Id
     @GeneratedValue
@@ -20,8 +26,8 @@ public class UserPo {
     private int age;
     private String email;
     private String phone;
+    @Builder.Default
     private int voteNum = 10;
-
 
 
 }

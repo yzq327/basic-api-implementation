@@ -1,6 +1,10 @@
 package com.thoughtworks.rslist.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import org.aspectj.lang.annotation.AfterReturning;
 
 import javax.validation.constraints.*;
 
@@ -27,8 +31,6 @@ public class User {
         this.phone = phone;
     }
 
-    public User() {
-    }
     @JsonProperty(value="user-name")
     public void setName(String name) {
         this.name = name;

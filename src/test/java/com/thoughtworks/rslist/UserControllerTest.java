@@ -3,8 +3,11 @@ package com.thoughtworks.rslist;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.po.RsEventPo;
 import com.thoughtworks.rslist.po.UserPo;
+import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -35,6 +38,8 @@ class UserControllerTest {
     MockMvc mockMvc;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    RsEventRepository rsEventRepository;
 
 
     @Test
@@ -59,6 +64,7 @@ class UserControllerTest {
         UserPo userPo = userRepository.findById(5);
         assertEquals("Joey",userPo.getName());
         assertEquals("male",userPo.getGender());
+
     }
 
     @Test
@@ -66,9 +72,12 @@ class UserControllerTest {
     public void should_delete_one_user() throws Exception{
         mockMvc.perform(delete("/user/5"))
                 .andExpect(status().isOk());
-        List<UserPo> all = userRepository.deleteById(5);;
-        assertEquals(1,all.size());
+        List<UserPo> all = userRepository.findAll();;
+        assertEquals(2,all.size());
     }
+
+
+
     @Test
     @Order(2)
     public void neme_should_less_than_8() throws Exception {
@@ -156,6 +165,20 @@ class UserControllerTest {
                 .andExpect((status().isBadRequest()))
                 .andExpect(jsonPath("$.error", is("invalid param")));
 
+    }
+
+    @Test
+    @Order(12)
+    public void should_delete_user() throws Exception{
+        UserPo userPo = UserPo.builder().voteNum(10).phone("19999999999").name("Monika")
+                .age(20).gender("famale").email("www.@1.com").build();
+        userRepository.save(userPo);
+        RsEventPo rsEventPo = RsEventPo.builder().keyWord("经济").eventName("涨工资了").userId(userPo.getId()).build();
+        rsEventRepository.save(rsEventPo);
+        mockMvc.perform(delete("/user/{id}",userPo.getId()))
+                .andExpect(status().isCreated());
+        assertEquals(0,userRepository.findAll().size());
+        assertEquals(0,rsEventRepository.findAll().size());
     }
 
 }

@@ -4,9 +4,11 @@ package com.thoughtworks.rslist.api;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.exception.RsEventNotValidException;
 import com.thoughtworks.rslist.po.UserPo;
+import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,6 +34,8 @@ class UserController {
     UserRepository userRepository;
     @Autowired
     UserPo userPo;
+    @Autowired
+    RsEventRepository rsEventRepository;
 
     @GetMapping("/user")
     public List<User> getUserList(@RequestParam(required = false) Integer start, @RequestParam (required = false) Integer end  ) {
@@ -61,8 +65,11 @@ class UserController {
         return userRepository.findById(id - 1);
     }
 
+    @Transactional
     @DeleteMapping("/user/{id}")
-    public void deleteUser(@PathVariable int id)  {
-        userRepository.deleteById(id - 1);
+    public ResponseEntity deleteUser(@PathVariable int id)  {
+        userRepository.deleteById(id);
+        rsEventRepository.deleteAllByUserId(id);
+        return ResponseEntity.created(null).build();
     }
 }

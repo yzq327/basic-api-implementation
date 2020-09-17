@@ -5,8 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.exception.RsEventNotValidException;
+import com.thoughtworks.rslist.po.RsEventPo;
+import com.thoughtworks.rslist.repository.RsEventRepository;
+import com.thoughtworks.rslist.repository.UserRepository;
 import com.zaxxer.hikari.util.FastList;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +26,10 @@ import java.util.logging.Logger;
 public class RsController {
 
   private List<RsEvent> rsList = initRsEventList();
+  @Autowired
+  RsEventRepository rsEventRepository;
+  UserRepository userRepository;
+
 
   public RsController() throws SQLException {
   }
@@ -31,9 +39,9 @@ public class RsController {
     createTableByJdbc();
     User user =new User("yzq", "female",18,"a@b.com","12345678912");
     List<RsEvent> rsEventList = new ArrayList<>();
-    rsEventList.add(new RsEvent("第一条事件","无标签",user));
-    rsEventList.add(new RsEvent("第二条事件","无标签",user));
-    rsEventList.add(new RsEvent("第三条事件","无标签",user));
+    rsEventList.add(new RsEvent("第一条事件","无标签",1));
+    rsEventList.add(new RsEvent("第二条事件","无标签",1));
+    rsEventList.add(new RsEvent("第三条事件","无标签",1));
     return rsEventList;
   }
 
@@ -69,20 +77,12 @@ public class RsController {
 
   @PostMapping("/rs/event")
   public ResponseEntity addRsEvent(@RequestBody @Validated RsEvent rsEvent) throws JsonProcessingException {
-    String userName= rsEvent.getUser().getName();
-    boolean isNotExist=true;
-    for (User user : UserController.userList){
-      if (user.getName().equals(userName)) {
-         isNotExist=false;
-      }
+    if( userRepository.findById(rsEvent.getUserID()).equals(null)){
+        return  ResponseEntity.badRequest().build();
     }
-    if(isNotExist){
-      UserController.userList.add(rsEvent.getUser());
-    }
-    rsList.add(rsEvent);
-    int newRsIndex=rsList.size()-1;
-   // return ResponseEntity.created(null)
-    //        .header("index",Integer.toString(newRsIndex)).build();
+    RsEventPo rsEventPo = RsEventPo.builder().keyWord(rsEvent.getKeyWord()).eventName(rsEvent.getEventName())
+            .userId(rsEvent.getUserID()).build();
+    rsEventRepository.save(rsEventPo);
     return ResponseEntity.created(null).build();
   }
 
@@ -101,7 +101,6 @@ public class RsController {
     if(index < 1 || index > rsList.size()){
       throw new IndexOutOfBoundsException();
     }
-
     rsList.remove(index-1);
     return ResponseEntity.created(null).build();
   }

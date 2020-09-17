@@ -12,7 +12,7 @@ public interface UserRepository extends CrudRepository <UserPo,Integer>{
 
     UserPo findById(int id);
 
-    List<UserPo> deleteById(int id);
+
 
 
 }
