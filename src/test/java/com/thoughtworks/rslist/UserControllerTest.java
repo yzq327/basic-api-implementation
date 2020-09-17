@@ -173,7 +173,7 @@ class UserControllerTest {
         UserPo userPo = UserPo.builder().voteNum(10).phone("19999999999").name("Monika")
                 .age(20).gender("famale").email("www.@1.com").build();
         userRepository.save(userPo);
-        RsEventPo rsEventPo = RsEventPo.builder().keyWord("经济").eventName("涨工资了").userId(userPo.getId()).build();
+        RsEventPo rsEventPo = RsEventPo.builder().keyWord("经济").eventName("涨工资了").UserPo(userPo).build();
         rsEventRepository.save(rsEventPo);
         mockMvc.perform(delete("/user/{id}",userPo.getId()))
                 .andExpect(status().isCreated());

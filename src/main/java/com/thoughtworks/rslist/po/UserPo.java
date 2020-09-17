@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.po;
 
+import com.thoughtworks.rslist.domain.RsEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -29,5 +31,15 @@ public class UserPo {
     @Builder.Default
     private int voteNum = 10;
 
+    @OneToMany(cascade = CascadeType.REMOVE)
+    private List<RsEventPo> rsEventPos;
 
+
+    public UserPo get() {
+        return this.get();
+    }
+
+    public boolean isPresent() {
+        return this.isPresent();
+    }
 }

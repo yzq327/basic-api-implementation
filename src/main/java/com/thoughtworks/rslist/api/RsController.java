@@ -6,6 +6,7 @@ import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.exception.RsEventNotValidException;
 import com.thoughtworks.rslist.po.RsEventPo;
+import com.thoughtworks.rslist.po.UserPo;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.zaxxer.hikari.util.FastList;
@@ -77,11 +78,13 @@ public class RsController {
 
   @PostMapping("/rs/event")
   public ResponseEntity addRsEvent(@RequestBody @Validated RsEvent rsEvent) throws JsonProcessingException {
-    if( userRepository.findById(rsEvent.getUserID()).equals(null)){
+    UserPo userPo= userRepository.findById(rsEvent.getUserID());
+
+    if( !userPo.isPresent()){
         return  ResponseEntity.badRequest().build();
     }
     RsEventPo rsEventPo = RsEventPo.builder().keyWord(rsEvent.getKeyWord()).eventName(rsEvent.getEventName())
-            .userId(rsEvent.getUserID()).build();
+            .UserPo(userPo.get()).build();
     rsEventRepository.save(rsEventPo);
     return ResponseEntity.created(null).build();
   }

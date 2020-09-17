@@ -65,11 +65,10 @@ class UserController {
         return userRepository.findById(id - 1);
     }
 
-    @Transactional
+
     @DeleteMapping("/user/{id}")
     public ResponseEntity deleteUser(@PathVariable int id)  {
         userRepository.deleteById(id);
-        rsEventRepository.deleteAllByUserId(id);
         return ResponseEntity.created(null).build();
     }
 }
