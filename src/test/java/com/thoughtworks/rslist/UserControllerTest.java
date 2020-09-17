@@ -35,8 +35,7 @@ class UserControllerTest {
     MockMvc mockMvc;
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    UserPo userPo;
+
 
     @Test
     @Order(1)
@@ -47,7 +46,7 @@ class UserControllerTest {
         mockMvc.perform(post("/user").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect((status().isOk()));
         List<UserPo> all = userRepository.findAll();
-        assertEquals(1,all.size());
+        assertEquals(3,all.size());
         assertEquals("Joey",all.get(0).getName());
         assertEquals("male",all.get(0).getGender());
     }
@@ -55,22 +54,20 @@ class UserControllerTest {
     @Test
     @Order(10)
     public void should_get_one_user() throws Exception{
-        mockMvc.perform(get("/user/1"))
+        mockMvc.perform(get("/user/5"))
                 .andExpect(status().isOk());
-        UserPo userPo = userRepository.findById(1);
+        UserPo userPo = userRepository.findById(5);
         assertEquals("Joey",userPo.getName());
         assertEquals("male",userPo.getGender());
-
-
     }
 
     @Test
     @Order(11)
     public void should_delete_one_user() throws Exception{
-        mockMvc.perform(delete("/user/1"))
+        mockMvc.perform(delete("/user/5"))
                 .andExpect(status().isOk());
-        List<UserPo> all = userRepository.findAll();
-        assertEquals(0,all.size());
+        List<UserPo> all = userRepository.deleteById(5);;
+        assertEquals(1,all.size());
     }
     @Test
     @Order(2)
