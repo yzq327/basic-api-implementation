@@ -82,6 +82,7 @@ public class RsController {
     if(index < 1 || index > rsList.size()){
       throw new IndexOutOfBoundsException();
     }
+
     rsList.remove(index-1);
     return ResponseEntity.created(null).build();
   }
