@@ -20,7 +20,7 @@ public class RsEventHandler {
     public ResponseEntity rsExceptionHandler(Exception e){
         String errorMessage;
         if(e instanceof MethodArgumentNotValidException) {
-            errorMessage = "invalid user";
+            errorMessage = "invalid param";
            // logger.error("An error Message");
         } else {
             errorMessage = e.getMessage();

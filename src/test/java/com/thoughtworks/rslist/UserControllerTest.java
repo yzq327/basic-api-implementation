@@ -1,9 +1,11 @@
 package com.thoughtworks.rslist;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoughtworks.rslist.domain.RsEvent;
+
 import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.po.UserPo;
+import com.thoughtworks.rslist.repository.UserRepository;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -13,11 +15,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.servlet.MockMvc;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.List;
+import java.util.Optional;
+
 
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.hasKey;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -27,6 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
     @Autowired
     MockMvc mockMvc;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    UserPo userPo;
 
     @Test
     @Order(1)
@@ -36,26 +46,32 @@ class UserControllerTest {
         String jsonString = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect((status().isOk()));
-        mockMvc.perform(get("/user?start=1&end=3"))
-                .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[0].user-name",is("yzq")))
-                .andExpect(jsonPath("$[0].user-gender",is("female")))
-                .andExpect(jsonPath("$[0].user-age",is(18)))
-                .andExpect(jsonPath("$[0].user-email",is("a@b.com")))
-                .andExpect(jsonPath("$[0].user-phone",is("12345678912")))
-                .andExpect(jsonPath("$[1].user-name",is("Jack")))
-                .andExpect(jsonPath("$[1].user-gender",is("male")))
-                .andExpect(jsonPath("$[1].user-age",is(20)))
-                .andExpect(jsonPath("$[1].user-email",is("c@b.com")))
-                .andExpect(jsonPath("$[1].user-phone",is("11111111111")))
-                .andExpect(jsonPath("$[2].user-name", is("Joey")))
-                .andExpect(jsonPath("$[2].user-gender", is("male")))
-                .andExpect(jsonPath("$[2].user-age", is(28)))
-                .andExpect(jsonPath("$[2].user-email", is("hhh@b.com")))
-                .andExpect(jsonPath("$[2].user-phone", is("18888888888")))
-                .andExpect(status().isOk());
+        List<UserPo> all = userRepository.findAll();
+        assertEquals(1,all.size());
+        assertEquals("Joey",all.get(0).getName());
+        assertEquals("male",all.get(0).getGender());
     }
 
+    @Test
+    @Order(10)
+    public void should_get_one_user() throws Exception{
+        mockMvc.perform(get("/user/1"))
+                .andExpect(status().isOk());
+        UserPo userPo = userRepository.findById(1);
+        assertEquals("Joey",userPo.getName());
+        assertEquals("male",userPo.getGender());
+
+
+    }
+
+    @Test
+    @Order(11)
+    public void should_delete_one_user() throws Exception{
+        mockMvc.perform(delete("/user/1"))
+                .andExpect(status().isOk());
+        List<UserPo> all = userRepository.findAll();
+        assertEquals(0,all.size());
+    }
     @Test
     @Order(2)
     public void neme_should_less_than_8() throws Exception {
@@ -124,6 +140,7 @@ class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
+
     @Test
     @Order(8)
     public void should_throw_invalid_request_param_exceptio() throws Exception{
@@ -140,7 +157,7 @@ class UserControllerTest {
         String jsonString = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect((status().isBadRequest()))
-                .andExpect(jsonPath("$.error", is("invalid user")));
+                .andExpect(jsonPath("$.error", is("invalid param")));
 
     }
 

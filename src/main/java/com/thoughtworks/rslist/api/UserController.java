@@ -1,15 +1,19 @@
 package com.thoughtworks.rslist.api;
 
 
-import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.exception.RsEventNotValidException;
-import org.springframework.http.ResponseEntity;
+import com.thoughtworks.rslist.po.UserPo;
+import com.thoughtworks.rslist.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 @RestController
 class UserController {
@@ -24,24 +28,41 @@ class UserController {
         return userList;
     }
 
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    UserPo userPo;
 
+    @GetMapping("/user")
+    public List<User> getUserList(@RequestParam(required = false) Integer start, @RequestParam (required = false) Integer end  ) {
+        if(start <= 0 || end > userList.size()){
+            throw new RsEventNotValidException("invalid request param");
+        }
+        if (start == null || end == null) {
+            return userList;
+        }
+        return userList.subList(start - 1, end);
+    }
 
    @PostMapping("/user")
    public  void addUser(@RequestBody  @Valid User user){
-       userList.add(user);
+       UserPo userPo = new UserPo();
+       userPo.setName(user.getName());
+       userPo.setAge(user.getAge());
+       userPo.setGender(user.getGender());
+       userPo.setEmail(user.getEmail());
+       userPo.setPhone(user.getPhone());
+       userPo.setVoteNum(user.getVoteNum());
+       userRepository.save(userPo);
     }
 
-   @GetMapping("/user")
-   public List<User> getUserList(@RequestParam(required = false) Integer start, @RequestParam (required = false) Integer end  ) {
-       if(start <= 0 || end > userList.size()){
-           throw new RsEventNotValidException("invalid request param");
-       }
-       if (start == null || end == null) {
-           return userList;
-       }
-       return userList.subList(start - 1, end);
+    @GetMapping("/user/{id}")
+    public UserPo getOneUser(@PathVariable int id ) {
+        return userRepository.findById(id - 1);
     }
 
-
-
+    @DeleteMapping("/user/{id}")
+    public void deleteUser(@PathVariable int id)  {
+        userRepository.deleteById(id - 1);
+    }
 }

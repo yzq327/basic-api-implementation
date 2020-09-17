@@ -28,7 +28,6 @@ public class User {
     }
 
     public User() {
-
     }
     @JsonProperty(value="user-name")
     public void setName(String name) {
@@ -69,5 +68,13 @@ public class User {
     @JsonProperty(value="user-phone")
     public String getPhone() {
         return phone;
+    }
+
+    public int getVoteNum() {
+        return voteNum;
+    }
+
+    public void setVoteNum(int voteNum) {
+        this.voteNum = voteNum;
     }
 }

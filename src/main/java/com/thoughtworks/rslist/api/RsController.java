@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.exception.RsEventNotValidException;
 import com.zaxxer.hikari.util.FastList;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,20 +23,37 @@ public class RsController {
 
   private List<RsEvent> rsList = initRsEventList();
 
+  public RsController() throws SQLException {
+  }
 
-  private List<RsEvent> initRsEventList() {
-    List<RsEvent> rsEventList = new ArrayList<>();
+
+  private static List<RsEvent> initRsEventList() throws SQLException {
+    createTableByJdbc();
     User user =new User("yzq", "female",18,"a@b.com","12345678912");
+    List<RsEvent> rsEventList = new ArrayList<>();
     rsEventList.add(new RsEvent("第一条事件","无标签",user));
     rsEventList.add(new RsEvent("第二条事件","无标签",user));
     rsEventList.add(new RsEvent("第三条事件","无标签",user));
     return rsEventList;
   }
 
+  private static void createTableByJdbc() throws SQLException {
+    Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/rsSystem",
+            "root","mysql");
+    DatabaseMetaData metaData = connection.getMetaData();
+    ResultSet resultSet = metaData.getTables(null,null,"rsEvent",null);
+    if(!resultSet.next()){
+      String createTableSql = "create table rsEvent(eventName varchar(200) not null,keyWord varchar(100) not null)";
+      Statement statement = connection.createStatement();
+      statement.execute(createTableSql);
+    }
+    connection.close();
+  }
+
   @GetMapping("/rs/{index}")
   public ResponseEntity getOneRsEvent(@PathVariable int index) throws Exception {
     if(index<1 || index > rsList.size()){
-      throw new IndexOutOfBoundsException();
+      throw new RsEventNotValidException("invalid index");
     }
     return ResponseEntity.ok(rsList.get(index - 1));
   }
