@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 
 
 @RestController
@@ -61,7 +61,7 @@ class UserController {
     }
 
     @GetMapping("/user/{id}")
-    public UserPo getOneUser(@PathVariable int id ) {
+    public Optional<UserPo>  getOneUser(@PathVariable int id ) {
         return userRepository.findById(id - 1);
     }
 

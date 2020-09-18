@@ -35,11 +35,4 @@ public class UserPo {
     private List<RsEventPo> rsEventPos;
 
 
-    public UserPo get() {
-        return this.get();
-    }
-
-    public boolean isPresent() {
-        return this.isPresent();
-    }
 }
