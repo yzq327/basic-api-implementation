@@ -51,13 +51,13 @@ public class VoteControllerTest {
     @Test
     public void should_get_vote_record() throws Exception{
         VotePo votePo = VotePo.builder().user(userPo).rsEvent(rsEventPo)
-                .localDateTime(LocalDateTime.now()).num(5).build();
+                .localDateTime(LocalDateTime.now()).num(6).build();
         voteRepository.save(votePo);
         mockMvc.perform(get("/voteRecord").param("userId", String.valueOf(userPo.getId()))
                 .param("rsEventId", String.valueOf(rsEventPo.getId())))
                 .andExpect(jsonPath("$",hasSize(1)))
                 .andExpect(jsonPath("$[0].userId",is(userPo.getId())))
                 .andExpect(jsonPath("$[0].rsEventId",is(rsEventPo.getId())))
-                .andExpect(jsonPath("$[0].voteNum",is(5)));
+                .andExpect(jsonPath("$[0].voteNum",is(6)));
     }
 }

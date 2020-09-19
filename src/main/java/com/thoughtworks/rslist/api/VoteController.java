@@ -24,7 +24,6 @@ public class VoteController {
 
     @GetMapping("/voteRecord")
     public ResponseEntity<List<Vote>> getVoteRecord(@RequestParam int userId, @RequestParam int rsEventId){
-
         return ResponseEntity.ok(
                 voteRepository.findAllByUserIdAndRsEventId(userId, rsEventId).stream().map(
                         item -> Vote.builder().userId(item.getUser().getId())
