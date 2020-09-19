@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.repository;
 
 import com.thoughtworks.rslist.po.VotePo;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -12,5 +13,6 @@ public interface VoteRepository extends PagingAndSortingRepository<VotePo, Integ
     @Override
     List<VotePo> findAll();
 
-    List<VotePo> findAllByUserIdAndRsEventId(int userId, int rsEventId, Pageable pageable);
+    @Query("select v from VotePo v where v.user.id = :userId and v.rsEvent.id = :rsEventId")
+    List<VotePo> findAccordingToUserAndRsEvent(int userId, int rsEventId, Pageable pageable);
 }

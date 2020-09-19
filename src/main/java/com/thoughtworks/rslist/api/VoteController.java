@@ -30,7 +30,7 @@ public class VoteController {
             (@RequestParam int userId, @RequestParam int rsEventId ,@RequestParam int pageIndex){
         Pageable pageable = PageRequest.of(pageIndex-1, 5);
         return ResponseEntity.ok(
-                voteRepository.findAllByUserIdAndRsEventId(userId, rsEventId, pageable).stream().map(
+                voteRepository.findAccordingToUserAndRsEvent(userId, rsEventId, pageable).stream().map(
                         item -> Vote.builder().userId(item.getUser().getId())
                                 .time(item.getLocalDateTime())
                                 .rsEventId(item.getRsEvent().getId())
