@@ -36,9 +36,9 @@ public class VoteControllerTest {
 
     @BeforeEach
     void setUp(){
+        voteRepository.deleteAll();
         userRepository.deleteAll();
         rsEventRepository.deleteAll();
-        voteRepository.deleteAll();
         userPo = UserPo.builder().name("Joey").age(19)
                 .email("a@b.com").gender("male")
                 .phone("12345678910").voteNum(10).build();
@@ -50,14 +50,30 @@ public class VoteControllerTest {
 
     @Test
     public void should_get_vote_record() throws Exception{
-        VotePo votePo = VotePo.builder().user(userPo).rsEvent(rsEventPo)
-                .localDateTime(LocalDateTime.now()).num(6).build();
-        voteRepository.save(votePo);
+        for(int i = 0; i < 8; i++){
+            VotePo votePo = VotePo.builder().user(userPo).rsEvent(rsEventPo)
+                    .localDateTime(LocalDateTime.now()).num(i+1).build();
+            voteRepository.save(votePo);
+        }
         mockMvc.perform(get("/voteRecord").param("userId", String.valueOf(userPo.getId()))
-                .param("rsEventId", String.valueOf(rsEventPo.getId())))
-                .andExpect(jsonPath("$",hasSize(1)))
+                .param("rsEventId", String.valueOf(rsEventPo.getId()))
+                .param("pageIndex", "1"))
+                .andExpect(jsonPath("$",hasSize(5)))
                 .andExpect(jsonPath("$[0].userId",is(userPo.getId())))
                 .andExpect(jsonPath("$[0].rsEventId",is(rsEventPo.getId())))
-                .andExpect(jsonPath("$[0].voteNum",is(6)));
+                .andExpect(jsonPath("$[0].voteNum",is(1)))
+                .andExpect(jsonPath("$[1].voteNum",is(2)))
+                .andExpect(jsonPath("$[2].voteNum",is(3)))
+                .andExpect(jsonPath("$[3].voteNum",is(4)))
+                .andExpect(jsonPath("$[4].voteNum",is(5)));
+        mockMvc.perform(get("/voteRecord").param("userId", String.valueOf(userPo.getId()))
+                .param("rsEventId", String.valueOf(rsEventPo.getId()))
+                .param("pageIndex", "2"))
+                .andExpect(jsonPath("$",hasSize(3)))
+                .andExpect(jsonPath("$[0].userId",is(userPo.getId())))
+                .andExpect(jsonPath("$[0].rsEventId",is(rsEventPo.getId())))
+                .andExpect(jsonPath("$[0].voteNum",is(6)))
+                .andExpect(jsonPath("$[1].voteNum",is(7)))
+                .andExpect(jsonPath("$[2].voteNum",is(8)));
     }
 }
