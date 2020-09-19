@@ -78,12 +78,15 @@ public class RsController {
   }
 
 
-  @PatchMapping("/rs/{index}")
-  public ResponseEntity patchRsEvent (@RequestBody RsEvent rsEvent, @PathVariable int index)  {
-    if(index < 1 || index > rsList.size()){
-      throw new IndexOutOfBoundsException();
+  @PatchMapping("/rs/{rsEventId}")
+  public ResponseEntity patchRsEvent (@PathVariable int rsEventId, @RequestBody  @Valid RsEvent rsEvent)  {
+    if(rsEventId != rsEvent.getUserID()){
+      return  ResponseEntity.badRequest().build();
     }
-    rsList.set(index-1,rsEvent);
+    Optional<UserPo> userPo = userRepository.findById(rsEvent.getUserID());
+    RsEventPo rsEventPo = RsEventPo.builder().keyWord(rsEvent.getKeyWord()).eventName(rsEvent.getEventName())
+            .userPo(userPo.get()).build();
+    rsEventRepository.save(rsEventPo);
     return ResponseEntity.created(null).build();
   }
 

@@ -16,37 +16,8 @@ import javax.validation.constraints.NotNull;
 @Data
 public class RsEvent {
 
-    @NotNull
     private String eventName;
-    @NotNull
     private String keyWord;
     @Valid
     private int userID;
-
-
-    public String getEventName() {
-        return eventName;
-    }
-
-    public String getKeyWord() {
-        return keyWord;
-    }
-
-    //@JsonIgnore
-    public int getUser() {
-        return userID;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
-    public void setKeyWord(String keyWord) {
-        this.keyWord = keyWord;
-    }
-
-    //@JsonProperty
-    public void setUser(User user) {
-        this.userID = userID;
-    }
 }

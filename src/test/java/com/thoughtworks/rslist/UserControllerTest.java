@@ -168,8 +168,8 @@ class UserControllerTest {
         rsEventRepository.save(rsEventPo);
         mockMvc.perform(delete("/user/{id}",userPo.getId()))
                 .andExpect(status().isCreated());
-        assertEquals(4,userRepository.findAll().size());
-        assertEquals(2, rsEventRepository.findAll().size());
+        assertEquals(0,userRepository.findAll().size());
+        assertEquals(0, rsEventRepository.findAll().size());
     }
 
 }
