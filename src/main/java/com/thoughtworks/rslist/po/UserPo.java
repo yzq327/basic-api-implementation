@@ -14,7 +14,6 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 @Data
-@Component
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -22,7 +21,6 @@ public class UserPo {
     @Id
     @GeneratedValue
     private  int id;
-    @Column(name = "name")
     private String name;
     private String gender;
     private int age;
@@ -31,8 +29,6 @@ public class UserPo {
     @Builder.Default
     private int voteNum = 10;
 
-    @OneToMany(cascade = CascadeType.REMOVE)
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "userPo")
     private List<RsEventPo> rsEventPos;
-
-
 }

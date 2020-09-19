@@ -22,9 +22,6 @@ class UserController {
    public static List<User> userList=initUserList();
    public static List<User> initUserList() {
         userList = new ArrayList<>();
-//   List<User> userList=initUserList();
-//   public static List<User> initUserList() {
-//        List<User> userList = new ArrayList<>();
         userList.add(new User("yzq", "female",18,"a@b.com","12345678912"));
         userList.add(new User("Jack", "male",20,"c@b.com","11111111111"));
         return userList;
@@ -32,8 +29,6 @@ class UserController {
 
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    UserPo userPo;
     @Autowired
     RsEventRepository rsEventRepository;
 
@@ -61,8 +56,8 @@ class UserController {
     }
 
     @GetMapping("/user/{id}")
-    public Optional<UserPo>  getOneUser(@PathVariable int id ) {
-        return userRepository.findById(id - 1);
+    public ResponseEntity getOneUser(@PathVariable int id ) {
+        return ResponseEntity.ok(userRepository.findById(id));
     }
 
 

@@ -21,6 +21,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @RestController
@@ -29,15 +30,15 @@ public class RsController {
   private List<RsEvent> rsList = initRsEventList();
   @Autowired
   RsEventRepository rsEventRepository;
+  @Autowired
   UserRepository userRepository;
 
 
-  public RsController() throws SQLException {
+  public RsController()  {
   }
 
 
-  private static List<RsEvent> initRsEventList() throws SQLException {
-    createTableByJdbc();
+  private static List<RsEvent> initRsEventList() {
     User user =new User("yzq", "female",18,"a@b.com","12345678912");
     List<RsEvent> rsEventList = new ArrayList<>();
     rsEventList.add(new RsEvent("第一条事件","无标签",1));
@@ -46,18 +47,6 @@ public class RsController {
     return rsEventList;
   }
 
-  private static void createTableByJdbc() throws SQLException {
-    Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/rsSystem",
-            "root","mysql");
-    DatabaseMetaData metaData = connection.getMetaData();
-    ResultSet resultSet = metaData.getTables(null,null,"rsEvent",null);
-    if(!resultSet.next()){
-      String createTableSql = "create table rsEvent(eventName varchar(200) not null,keyWord varchar(100) not null)";
-      Statement statement = connection.createStatement();
-      statement.execute(createTableSql);
-    }
-    connection.close();
-  }
 
   @GetMapping("/rs/{index}")
   public ResponseEntity getOneRsEvent(@PathVariable int index) throws Exception {
@@ -78,13 +67,12 @@ public class RsController {
 
   @PostMapping("/rs/event")
   public ResponseEntity addRsEvent(@RequestBody @Validated RsEvent rsEvent) throws JsonProcessingException {
-    UserPo userPo= userRepository.findById(rsEvent.getUserID());
-
+    Optional<UserPo> userPo = userRepository.findById(rsEvent.getUserID());
     if( !userPo.isPresent()){
         return  ResponseEntity.badRequest().build();
     }
     RsEventPo rsEventPo = RsEventPo.builder().keyWord(rsEvent.getKeyWord()).eventName(rsEvent.getEventName())
-            .UserPo(userPo.get()).build();
+            .userPo(userPo.get()).build();
     rsEventRepository.save(rsEventPo);
     return ResponseEntity.created(null).build();
   }

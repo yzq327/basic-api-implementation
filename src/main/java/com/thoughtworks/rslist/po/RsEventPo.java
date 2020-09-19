@@ -18,7 +18,6 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Component
 public class RsEventPo {
     @Id
     @GeneratedValue
@@ -27,7 +26,5 @@ public class RsEventPo {
     private String keyWord;
 
     @ManyToOne
-    private UserPo UserPo;
-
-
+    private UserPo userPo;
 }
