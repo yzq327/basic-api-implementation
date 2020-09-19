@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
+
 @Entity
 @Data
 @Table(name = "rsEvent")
@@ -24,7 +26,12 @@ public class RsEventPo {
     private int id;
     private String eventName;
     private String keyWord;
+    private int voteNum;
 
     @ManyToOne
     private UserPo userPo;
+
+    @OneToMany(cascade = CascadeType.REMOVE)
+    private List<VotePo> votePos;
+
 }

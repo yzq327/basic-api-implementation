@@ -6,33 +6,29 @@ import com.thoughtworks.rslist.exception.RsEventNotValidException;
 import com.thoughtworks.rslist.po.UserPo;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 
 @RestController
 class UserController {
-   public static List<User> userList=initUserList();
-   public static List<User> initUserList() {
-        userList = new ArrayList<>();
-        userList.add(new User("yzq", "female",18,"a@b.com","12345678912"));
-        userList.add(new User("Jack", "male",20,"c@b.com","11111111111"));
-        return userList;
-    }
+
 
     @Autowired
     UserRepository userRepository;
     @Autowired
     RsEventRepository rsEventRepository;
+    @Autowired
+    VoteRepository voteRepository;
 
-    @GetMapping("/user")
+    /*@GetMapping("/user")
     public List<User> getUserList(@RequestParam(required = false) Integer start, @RequestParam (required = false) Integer end  ) {
         if(start <= 0 || end > userList.size()){
             throw new RsEventNotValidException("invalid request param");
@@ -41,7 +37,7 @@ class UserController {
             return userList;
         }
         return userList.subList(start - 1, end);
-    }
+    }*/
 
    @PostMapping("/user")
    public  void addUser(@RequestBody  @Valid User user){
