@@ -121,7 +121,5 @@ public class VoteControllerTest {
                 .andExpect(jsonPath("$[1].voteNum",is(2)))
                 .andExpect(jsonPath("$[2].voteNum",is(3)))
                 .andExpect(jsonPath("$[3].voteNum",is(4)));
-
-
     }
 }
