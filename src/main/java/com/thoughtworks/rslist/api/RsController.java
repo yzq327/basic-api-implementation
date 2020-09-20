@@ -117,7 +117,7 @@ public class RsController {
   }
 
   @PostMapping("/rs/vote/{rsEventId}")
-  public ResponseEntity vote(@PathVariable int rsEventId, @RequestBody Vote vote) {
+  public ResponseEntity vote(@RequestParam int rsEventId, @RequestBody Vote vote) {
     vote.setRsEventId(rsEventId);
     rsService.vote(vote, rsEventId);
     return ResponseEntity.ok().build();
