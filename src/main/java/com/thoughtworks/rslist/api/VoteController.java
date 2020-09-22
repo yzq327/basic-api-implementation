@@ -7,6 +7,8 @@ import com.thoughtworks.rslist.po.VotePo;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;
+import com.thoughtworks.rslist.service.UserService;
+import com.thoughtworks.rslist.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,53 +30,29 @@ public class VoteController {
     RsEventRepository rsEventRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    VoteService voteService;
 
-    /*@PostMapping("/rs/vote/{rsEventId}")
+    @PostMapping("/rs/vote/{rsEventId}")
     public ResponseEntity postVoteRecord(@PathVariable int rsEventId, @RequestBody @Valid Vote vote) {
-        Optional<RsEventPo> rsEventPo = rsEventRepository.findById(rsEventId);
-        Optional<UserPo> userPo = userRepository.findById(vote.getUserId());
-        if (!rsEventPo.isPresent()
-                || !userPo.isPresent()
-                || vote.getVoteNum() > userPo.get().getVoteNum()) {
-            throw new RuntimeException();
-        }
-        VotePo votePo = VotePo.builder().localDateTime(vote.getTime())
-                .num(vote.getVoteNum()).rsEvent(rsEventPo.get())
-                .user(userPo.get()).build();
-        voteRepository.save(votePo);
-        UserPo user = userPo.get();
-        user.setVoteNum(user.getVoteNum() - vote.getVoteNum());
-        userRepository.save(user);
-        RsEventPo rsEvent = rsEventPo.get();
-        rsEvent.setEventName(rsEvent.getEventName() + vote.getVoteNum());
-        rsEventRepository.save(rsEvent);
+        voteService.post(rsEventId, vote);
         return ResponseEntity.ok().build();
-    }*/
-
-   /* @GetMapping("/voteRecord")
-    public ResponseEntity<List<Vote>> getVoteRecord
-            (@RequestParam int userId, @RequestParam int rsEventId, @RequestParam int pageIndex) {
-        Pageable pageable = PageRequest.of(pageIndex - 1, 5);
-        return ResponseEntity.ok(
-                voteRepository.findAccordingToUserAndRsEvent(userId, rsEventId, pageable).stream().map(
-                        item -> Vote.builder().userId(item.getUser().getId())
-                                .time(item.getLocalDateTime())
-                                .rsEventId(item.getRsEvent().getId())
-                                .voteNum(item.getNum()).build()
-                ).collect(Collectors.toList()));
-    }*/
+    }
 
     @GetMapping("/voteRecord")
     public ResponseEntity<List<Vote>> getVoteRecord
+            (@RequestParam int userId, @RequestParam int rsEventId, @RequestParam int pageIndex) {
+        List<Vote> votes = voteService.get(userId, rsEventId, pageIndex);
+        Pageable pageable = PageRequest.of(pageIndex - 1, 5);
+        return ResponseEntity.ok(votes);
+    }
+
+    @GetMapping("/voteRecord")
+    public ResponseEntity<List<Vote>> getVoteRecordBasedOnTime
             (@RequestParam int userId, @RequestParam int rsEventId, @RequestParam int pageIndex,
              @RequestParam(required = false) Date startDate, @RequestParam (required = false) Date endDate ) {
+        List<Vote> votes = voteService.getBasedOnTime(userId, rsEventId, pageIndex, startDate, endDate);
         Pageable pageable = PageRequest.of(pageIndex - 1, 5);
-        return ResponseEntity.ok(
-                voteRepository.findAccordingToUserAndRsEvent(userId, rsEventId, pageable).stream().map(
-                        item -> Vote.builder().userId(item.getUser().getId())
-                                .time(item.getLocalDateTime())
-                                .rsEventId(item.getRsEvent().getId())
-                                .voteNum(item.getNum()).build()
-                ).collect(Collectors.toList()));
+        return ResponseEntity.ok(votes);
     }
 }

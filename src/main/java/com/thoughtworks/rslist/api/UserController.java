@@ -7,6 +7,8 @@ import com.thoughtworks.rslist.po.UserPo;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;
+import com.thoughtworks.rslist.service.RsService;
+import com.thoughtworks.rslist.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,10 @@ class UserController {
     RsEventRepository rsEventRepository;
     @Autowired
     VoteRepository voteRepository;
+    @Autowired
+    UserService userService;
+
+
 
     /*@GetMapping("/user")
     public List<User> getUserList(@RequestParam(required = false) Integer start, @RequestParam (required = false) Integer end  ) {
@@ -40,26 +46,21 @@ class UserController {
     }*/
 
    @PostMapping("/user")
-   public  void addUser(@RequestBody  @Valid User user){
-       UserPo userPo = new UserPo();
-       userPo.setName(user.getName());
-       userPo.setAge(user.getAge());
-       userPo.setGender(user.getGender());
-       userPo.setEmail(user.getEmail());
-       userPo.setPhone(user.getPhone());
-       userPo.setVoteNum(user.getVoteNum());
-       userRepository.save(userPo);
+   public  ResponseEntity addUser(@RequestBody  @Valid User user){
+       userService.add(user);
+       return ResponseEntity.created(null).build();
     }
 
     @GetMapping("/user/{id}")
     public ResponseEntity getOneUser(@PathVariable int id ) {
-        return ResponseEntity.ok(userRepository.findById(id));
+        userService.get(id);
+        return ResponseEntity.created(null).build();
     }
 
 
     @DeleteMapping("/user/{id}")
     public ResponseEntity deleteUser(@PathVariable int id)  {
-        userRepository.deleteById(id);
+        userService.delete(id);
         return ResponseEntity.created(null).build();
     }
 }
