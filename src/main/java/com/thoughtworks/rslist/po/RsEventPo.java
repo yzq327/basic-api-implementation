@@ -31,7 +31,7 @@ public class RsEventPo {
     @ManyToOne
     private UserPo userPo;
 
-    @OneToMany(cascade = CascadeType.REMOVE)
-    private List<VotePo> votePos;
+//    @OneToMany(cascade = CascadeType.REMOVE)
+//    private List<VotePo> votePos;
 
 }

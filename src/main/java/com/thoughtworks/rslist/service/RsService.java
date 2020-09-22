@@ -2,15 +2,19 @@ package com.thoughtworks.rslist.service;
 
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.Vote;
+import com.thoughtworks.rslist.exception.RsEventNotValidException;
 import com.thoughtworks.rslist.po.RsEventPo;
 import com.thoughtworks.rslist.po.UserPo;
 import com.thoughtworks.rslist.po.VotePo;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RsService {
@@ -43,6 +47,47 @@ public class RsService {
         rsEvent.setEventName(rsEvent.getEventName() + vote.getVoteNum());
         rsEventRepository.save(rsEvent);
     }
+
+    public void add(RsEvent rsEvent){
+        Optional<UserPo> userPo = userRepository.findById(rsEvent.getUserID());
+        if( !userPo.isPresent()){
+            throw new RuntimeException();
+        } else {
+            RsEventPo rsEventPo = RsEventPo.builder()
+                    .keyWord(rsEvent.getKeyWord())
+                    .eventName(rsEvent.getEventName())
+                    .userPo(userPo.get()).build();
+            rsEventRepository.save(rsEventPo);
+        }
+
+    }
+
+    public void delete(int rsEventId){
+        rsEventRepository.delete(rsEventRepository.findById(rsEventId).get());
+    }
+
+    public void patch(int rsEventId, RsEvent rsEvent){
+        if(rsEventId != rsEvent.getUserID()){
+            throw new RuntimeException();
+        }
+        Optional<UserPo> userPo = userRepository.findById(rsEvent.getUserID());
+        RsEventPo rsEventPo = RsEventPo.builder().keyWord(rsEvent.getKeyWord()).eventName(rsEvent.getEventName())
+                .userPo(userPo.get()).build();
+        rsEventRepository.save(rsEventPo);
+    }
+
+    public RsEvent get(int index){
+        List<RsEvent> rsEvents =
+                rsEventRepository.findAll().stream().map(item ->
+                        RsEvent.builder().eventName(item.getEventName()).keyWord(item.getKeyWord())
+                                .userID(item.getId()).voteNum(item.getVoteNum()).build())
+                        .collect(Collectors.toList());
+        if(index<1 || index > rsEvents.size()){
+            throw new RuntimeException();
+        }
+        return rsEvents.get(index);
+    }
+
 
 
 }

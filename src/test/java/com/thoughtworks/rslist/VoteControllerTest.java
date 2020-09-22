@@ -72,7 +72,8 @@ public class VoteControllerTest {
         List<VotePo> all = voteRepository.findAll();
         assertNotNull(all);
         assertEquals(1,all.size());
-        assertEquals(2,all.get(1).getNum());
+        assertEquals(1,all.get(1).getNum());
+
     }
 
     @Test
@@ -111,7 +112,7 @@ public class VoteControllerTest {
                     .localDateTime(LocalDateTime.now()).num(i+1).build();
             voteRepository.save(votePo);
         }
-        mockMvc.perform(get("/voteRecord?startDate=2020/9/20 00:00:25&endDate=2020/9/21 00:00:25 ").param("userId", String.valueOf(userPo.getId()))
+        mockMvc.perform(get("/voteRecord?startDate=2020/9/20 00:00:25&endDate=2020/9/23 00:00:25 ").param("userId", String.valueOf(userPo.getId()))
                 .param("rsEventId", String.valueOf(rsEventPo.getId()))
                 .param("pageIndex", "1"))
                 .andExpect(jsonPath("$",hasSize(4)))

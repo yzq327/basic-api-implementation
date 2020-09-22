@@ -30,9 +30,8 @@ public class UserPo {
     private int voteNum = 10;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "userPo")
-  //  @OneToMany(cascade = CascadeType.REMOVE)
     private List<RsEventPo> rsEventPos;
 
-    @OneToMany(cascade = CascadeType.REMOVE)
-    private List<VotePo> votePos;
+//    @OneToMany(cascade = CascadeType.REMOVE)
+//    private List<VotePo> votePos;
 }
