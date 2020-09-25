@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
+@CrossOrigin
 @RestController
 public class RsController {
   @Autowired
@@ -59,7 +59,23 @@ public class RsController {
     return ResponseEntity.created(null).build();
   }
 
- @GetMapping("/rs/event")
+/* @GetMapping("/rs/event")
+  public ResponseEntity<List<RsEvent>> getEventListBetween(
+          @RequestParam (required = false) Integer start, @RequestParam (required = false)  Integer end){
+
+    List<RsEvent> rsEvents =
+            rsEventRepository.findAll().stream().map(item ->
+                    RsEvent.builder().eventName(item.getEventName()).keyWord(item.getKeyWord())
+                            .userID(item.getId()).voteNum(item.getVoteNum()).build())
+                    .collect(Collectors.toList());
+
+   if (start == null || end == null) {
+      return ResponseEntity.ok(rsEvents);
+    }
+    return ResponseEntity.ok(rsEvents.subList(start - 1, end));
+  }*/
+ @CrossOrigin
+ @GetMapping("/event")
   public ResponseEntity<List<RsEvent>> getEventListBetween(
           @RequestParam (required = false) Integer start, @RequestParam (required = false)  Integer end){
 
@@ -75,6 +91,7 @@ public class RsController {
     return ResponseEntity.ok(rsEvents.subList(start - 1, end));
   }
 
+    @CrossOrigin
   @GetMapping("/rs/{index}")
   public ResponseEntity<RsEvent> getOneRsEvent(@PathVariable int index) {
       rsService.get(index);
@@ -87,12 +104,28 @@ public class RsController {
       return ResponseEntity.created(null).build();
   }
 
-
+    @CrossOrigin
   @PostMapping("/rs/event")
   public ResponseEntity addRsEvent(@RequestBody @Validated RsEvent rsEvent) {
       rsService.add(rsEvent);
       return ResponseEntity.ok().build();
   }
+  @PostMapping("/event")
+  public  ResponseEntity addUser(@RequestBody  @Valid RsEvent rsEvent){
+        Optional<UserPo> userPo = userRepository.findById(rsEvent.getUserID());
+        if( !userPo.isPresent()){
+            throw new RuntimeException();
+        } else {
+            RsEventPo rsEventPo = RsEventPo.builder()
+                    .keyWord(rsEvent.getKeyWord())
+                    .eventName(rsEvent.getEventName())
+                    .userPo(userPo.get()).build();
+            rsEventRepository.save(rsEventPo);
+        }
+        return ResponseEntity.ok().build();
+    }
+
+
 
   @PostMapping("/rs/vote/{rsEventId}")
     public ResponseEntity vote(@PathVariable int rsEventId, @RequestBody Vote vote) {

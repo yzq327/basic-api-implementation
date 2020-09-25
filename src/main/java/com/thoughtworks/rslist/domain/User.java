@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
 import lombok.NoArgsConstructor;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.validation.constraints.*;
 
@@ -13,6 +15,8 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
+@CrossOrigin
 public class User {
     @NotNull
     @Size(max = 8)
@@ -26,6 +30,7 @@ public class User {
     private String email;
     @Pattern(regexp = "1\\d{10}")
     private String phone;
+    @Builder.Default
     private int voteNum = 10;
 
 /*//    public User(String name, String gender, int age, String email, String phone) {

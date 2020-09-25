@@ -67,6 +67,4 @@ public class VoteService {
                         .voteNum(item.getNum()).build()
         ).collect(Collectors.toList());
     }
-
-
 }

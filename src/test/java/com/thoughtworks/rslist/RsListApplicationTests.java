@@ -34,14 +34,23 @@ class RsListApplicationTests {
     UserRepository userRepository;
     @Autowired
     RsEventRepository rsEventRepository;
+    UserPo userPo;
+    RsEventPo rsEventPo;
 
     @BeforeEach
     public void SetUp() throws SQLException {
         userRepository.deleteAll();
         rsEventRepository.deleteAll();
+        userPo = UserPo.builder().name("Joey").age(19)
+                .email("a@b.com").gender("male")
+                .phone("12345678910").voteNum(10).build();
+        userPo = userRepository.save(userPo);
+        rsEventPo = RsEventPo.builder().eventName("代码通过啦")
+                .keyWord("你真棒").voteNum(8).build();
+        rsEventPo = rsEventRepository.save(rsEventPo);
     }
 
-   /* @Test
+    @Test
     public void should_get_rs_event_list() throws Exception{
         mockMvc.perform(get("/rs/list"))
                 .andExpect(jsonPath("$", hasSize(3)))
@@ -96,8 +105,8 @@ class RsListApplicationTests {
 
     @Test
     public void eventName_should_not_null() throws Exception {
-        User user =new User("xiaowang", "female",19,"a@thoughtworks.com","18888888888");
-        RsEvent rsEvent = new RsEvent(null,"娱乐",1);
+        User user =new User("xiaowang", "female",19,"a@thoughtworks.com","18888888888",1);
+        RsEvent rsEvent = new RsEvent(null,"娱乐",1,1);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
@@ -106,8 +115,8 @@ class RsListApplicationTests {
 
     @Test
     public void keyWord_should_not_null() throws Exception {
-        User user =new User("xiaowang", "female",19,"a@thoughtworks.com","18888888888");
-        RsEvent rsEvent = new RsEvent("添加一条热搜",null,1);
+        User user =new User("xiaowang", "female",19,"a@thoughtworks.com","18888888888",1);
+        RsEvent rsEvent = new RsEvent("添加一条热搜",null,1,1);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
@@ -126,8 +135,8 @@ class RsListApplicationTests {
         UserPo savedUser = userRepository.save(UserPo.builder().name("chenhui").age(19).phone("18888888888")
                 .email("hhh11@a.com").gender("female").voteNum(19).build());
 //        String jsonString ="{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\",\"userId\": " + savedUser.getId() + "}";\
-        User user =new User("Joey", "male",28,"hhh@b.com","18888888888");
-        RsEvent rsEvent =new RsEvent("涨工资了","经济",savedUser.getId());
+        User user =new User("Joey", "male",28,"hhh@b.com","18888888888",1);
+        RsEvent rsEvent =new RsEvent("涨工资了","经济",savedUser.getId(),1);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
@@ -155,7 +164,7 @@ class RsListApplicationTests {
         userRepository.save(userPo);
         RsEventPo rsEventPo = RsEventPo.builder().keyWord("幻想").eventName("中彩票啦").userPo(userPo).build();
         rsEventRepository.save(rsEventPo);
-        RsEvent rsEvent =new RsEvent("涨工资了","经济",userPo.getId());
+        RsEvent rsEvent =new RsEvent("涨工资了","经济",userPo.getId(),1);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(patch("/rs/{rsEventId}",userPo.getId()).content(jsonString).contentType(MediaType.APPLICATION_JSON))
@@ -179,7 +188,7 @@ class RsListApplicationTests {
         userRepository.save(userPo1);
         RsEventPo rsEventPo = RsEventPo.builder().keyWord("幻想").eventName("中彩票啦").userPo(userPo).build();
         rsEventRepository.save(rsEventPo);
-        RsEvent rsEvent =new RsEvent("涨工资了","经济",userPo1.getId());
+        RsEvent rsEvent =new RsEvent("涨工资了","经济",userPo1.getId(),1);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(patch("/rs/{rsEventId}",userPo.getId()).content(jsonString).contentType(MediaType.APPLICATION_JSON))
@@ -193,7 +202,7 @@ class RsListApplicationTests {
         userRepository.save(userPo);
         RsEventPo rsEventPo = RsEventPo.builder().keyWord("幻想").eventName("中彩票啦").userPo(userPo).build();
         rsEventRepository.save(rsEventPo);
-        RsEvent rsEvent =new RsEvent(null,"经济",userPo.getId());
+        RsEvent rsEvent =new RsEvent(null,"经济",userPo.getId(),1);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(patch("/rs/{rsEventId}",userPo.getId()).content(jsonString).contentType(MediaType.APPLICATION_JSON))
@@ -214,7 +223,7 @@ class RsListApplicationTests {
         userRepository.save(userPo);
         RsEventPo rsEventPo = RsEventPo.builder().keyWord("幻想").eventName("中彩票啦").userPo(userPo).build();
         rsEventRepository.save(rsEventPo);
-        RsEvent rsEvent =new RsEvent("台湾回归了",null,userPo.getId());
+        RsEvent rsEvent =new RsEvent("台湾回归了",null,userPo.getId(),1);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(patch("/rs/{rsEventId}",userPo.getId()).content(jsonString).contentType(MediaType.APPLICATION_JSON))
@@ -226,6 +235,6 @@ class RsListApplicationTests {
         assertEquals("幻想",all.get(0).getKeyWord());
         assertEquals(userPo.getId(),all.get(0).getUserPo().getId());
         assertEquals(userPo.getId(),all.get(1).getUserPo().getId());
-    }*/
+    }
 
 }
